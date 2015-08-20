@@ -1,0 +1,67 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import groovy.util.ConfigObject;
+
+/**
+ * Dependencies for the coveralls plugin, the one that does the magic.
+ */
+buildscript {
+    repositories {
+    	mavenCentral()
+	}
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'application'
+	id 'net.researchgate.release' version '2.1.2'
+}
+
+apply from: "${rootDir}/src/main/resources/jacoco/jacoco.gradle"
+
+mainClassName='com.gusvmx.Main'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': version
+	}
+	exclude '**/*.xml'
+	exclude '**/*.properties'
+	exclude '**/*.sh'
+	exclude 'bin'
+	exclude 'etc'
+	exclude 'launcher'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	// Project dependencies
+}
+
+task wrapper(type: Wrapper) { gradleVersion = '2.4' }
+
+/**
+ * (Optional) Should your project need different metrics than default ones you can override them.
+ */
+ext {
+	minCoverageRates = [
+		'instruction': 100,
+		'branch'     : 90,
+		'line'       : 95,
+		'complexity' : 85,
+		'method'     : 95,
+		'class'      : 90
+	]
+}
+
+// This is all what you need.
